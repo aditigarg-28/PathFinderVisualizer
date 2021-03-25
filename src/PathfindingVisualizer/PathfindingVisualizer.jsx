@@ -79,6 +79,7 @@ export default class PathfindingVisualizer extends Component {
     startNode:{row:row,col:col} ,
     previousStartNode:{row:row,col:col},
     });
+    
     console.log(this.state.startNode)
     }
    else if(this.state.finishNodePressed && this.state.startNode.row!==row && this.state.startNode.col!==col){
@@ -101,10 +102,16 @@ console.log(this.state.finishNode)
       }
     
       handleMouseUp() {
-        if (this.state.startNodePressed)
+        if (this.state.startNodePressed){
         this.setState({ mouseIsPressed: false, startNodePressed: false });
-      else if (this.state.finishNodePressed)
+        this.handleClear();
+        this.visualizeDijkstra();
+        }
+      else if (this.state.finishNodePressed){
         this.setState({ mouseIsPressed: false, finishNodePressed: false });
+        this.handleClear();
+        this.visualizeDijkstra();
+      }
         else
         this.setState({mouseIsPressed: false});
       }
@@ -127,8 +134,9 @@ console.log(this.state.finishNode)
         }
     }
     handleClear=()=>{
-     for (let row = 0; row < 24; row++) {
-        for (let col = 0; col < 70; col++) {
+     for (let row = 0; row < 20; row++) {
+        for (let col = 0; col < 50; col++) {
+          var node=this.state.nodes[row][col];
           if(row === this.state.startNode.row && col === this.state.startNode.col){
             document.getElementById(`node-${row}-${col}`).className ="node node-start";
           }
@@ -136,6 +144,7 @@ console.log(this.state.finishNode)
             document.getElementById(`node-${row}-${col}`).className ="node node-finish" ;
           }
           else{
+            if(!node.isWall)
           document.getElementById(`node-${row}-${col}`).className ="node clearNode";
           }
           //nodes[row][col].distance=Infinity;
@@ -227,17 +236,17 @@ console.log(this.state.finishNode)
             document.getElementById(`node-${node.row}-${node.col}`).className =
              'node node-shortest-path';
              if(node.row === this.state.startNode.row && node.col === this.state.startNode.col){
-              document.getElementById(`node-${node.row}-${node.col}`).className ="node node-start";
+              document.getElementById(`node-${node.row}-${node.col}`).className ="node node-start-visited";
             }
             else if(node.row === this.state.finishNode.row && node.col === this.state.finishNode.col){
-              document.getElementById(`node-${node.row}-${node.col}`).className ="node node-finish" ;
+              document.getElementById(`node-${node.row}-${node.col}`).className ="node node-finish-visited" ;
             }
            // console.log(`node-${node.row}-${node.col}`)
           }, 50 * i);
           
         }
-       
-        this.enableButtons();
+        setTimeout(()=>{
+        this.enableButtons()},2000);
       }
 
 
@@ -325,9 +334,9 @@ console.log(this.state.finishNode)
  getInitialGrid = () => {
         console.log("getInitialGrid chli");
         const nodes = [];
-        for (let row = 0; row < 24; row++) {
+        for (let row = 0; row < 20; row++) {
           const currentRow = [];
-          for (let col = 0; col < 70; col++) {
+          for (let col = 0; col < 50; col++) {
             currentRow.push(this.createNode(col, row));
           }
           nodes.push(currentRow);
