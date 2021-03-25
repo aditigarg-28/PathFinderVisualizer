@@ -1,11 +1,12 @@
 .grid {
-    margin: 30px 20px 0;
+    margin: 20px 20px 0;
     outline: 3px solid  #48c9b0;
   }
    .info{
-     background-color: #48c9b0;
+    font-size: 20px;
     margin: 50px 5px 50px 20px;
     color: black;
+    text-align: right;
    }
    #infoNodes{
      display: flex;
@@ -20,19 +21,19 @@
       height: 40px;
       font-size: 20px;
       background-color: #48c9b0;
-      margin: 5px 5px 5px 5px;
+      margin: 10px 5px 0px 5px;
   }
   .myButton:hover{
     color: #fff;
 }
  #header {
-    background-color: #34495e;
-    padding: 5px 10px 10px 10px;
+    background-color: #48c9b0;
+    padding: 0px 10px 0px 10px;
     text-align: center;
   }
   
 #header h2{
-    color: #48c9b0;
+    color: #34495e;
     display: flex;
     justify-content: space-between;
     flex-direction: row;
@@ -72,21 +73,21 @@
   @keyframes heading {
     0% {
       transform: scale(0.3);
-      font-size: 5px;
+      font-size: 2px;
     }
   
     50% {
-      font-size: 10px;
+      font-size: 8px;
     }
   
     75% {
       transform: scale(1.2);
-      font-size: 20px;
+      font-size: 10px;
     }
   
     100% {
       transform: scale(1);
-      color: #48c9b0;
+      color: #34495e;
     }
   }
   

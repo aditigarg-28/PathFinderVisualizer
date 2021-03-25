@@ -8,7 +8,7 @@ export default class PathfindingVisualizer extends Component {
       super();
       this.state = {
         nodes:[],
-        algo:"",
+        algo:"Dijkstra Algo",
         speed:10,
         startNode:{row:10,col:15},
         finishNode:{row:10,col:35},
@@ -133,6 +133,25 @@ console.log(this.state.finishNode)
          this.visualizeDijkstra();
         }
     }
+    clearPath=()=>{
+      for (let row = 0; row < 20; row++) {
+        for (let col = 0; col < 50; col++) {
+          var node=this.state.nodes[row][col];
+          if(row === this.state.startNode.row && col === this.state.startNode.col){
+            document.getElementById(`node-${row}-${col}`).className ="node node-start";
+          }
+          else if(row === this.state.finishNode.row && col === this.state.finishNode.col){
+            document.getElementById(`node-${row}-${col}`).className ="node node-finish" ;
+          }
+          else if(node.isWall){
+            document.getElementById(`node-${row}-${col}`).className ="node node-wall" ;
+          }
+          else{
+          document.getElementById(`node-${row}-${col}`).className ="node clearNode";
+          }
+        }
+      }
+    }
     handleClear=()=>{
      for (let row = 0; row < 20; row++) {
         for (let col = 0; col < 50; col++) {
@@ -143,21 +162,20 @@ console.log(this.state.finishNode)
           else if(row === this.state.finishNode.row && col === this.state.finishNode.col){
             document.getElementById(`node-${row}-${col}`).className ="node node-finish" ;
           }
+          else if(node.isWall){
+            document.getElementById(`node-${row}-${col}`).className ="node node-wall" ;
+          }
           else{
-            if(!node.isWall)
           document.getElementById(`node-${row}-${col}`).className ="node clearNode";
           }
-          //nodes[row][col].distance=Infinity;
-
         }
       }
-      document.getElementById("algoDropDown").value="Select Algo";
+     // document.getElementById("algoDropDown").value="Select Algo";
       document.getElementById("speedDropDown").value="Speed";
       const nodes = this.getInitialGrid();
      
       this.setState({
         nodes: nodes,
-        algo:"",
         speed:10,
         totalVisitedNodes:"",
         pathLength:"",
@@ -251,6 +269,7 @@ console.log(this.state.finishNode)
 
 
       visualizeDijkstra=()=>{
+        this.clearPath();
        this.disableButtons();
         alert("Dijkstra Function called");
         const {nodes,startNode,finishNode} = this.state;
@@ -276,11 +295,12 @@ console.log(this.state.finishNode)
            <h2 id="title">VisuAlgo</h2>
            <h2>Algo Selected: {this.state.algo}</h2>
            </div>
+           </header>
            <select className="dropdown" id="algoDropDown" onChange={this.onAlgoChange}>
            <option>Select Algo</option>
              <option className="dropdown-item" value="DFS">DFS</option>
              <option className="dropdown-item" value="BFS">BFS</option>
-             <option className="dropdown-item" value="Dijkstra Algo">Dijkstra Algo</option>
+             <option className="dropdown-item" value="Dijkstra Algo" selected>Dijkstra Algo</option>
            </select>
            <select className="dropdown" id="speedDropDown" onChange={this.onSpeedChange}>
            <option>Speed</option>
@@ -293,7 +313,7 @@ console.log(this.state.finishNode)
               <MDBBtn onClick={this.handleClear} className="myButton" id="clearButton">Clear</MDBBtn>
               <span className="info">Total Visited Nodes: {this.state.totalVisitedNodes}</span>
               <span className="info">Path Length: {this.state.pathLength}</span>
-              </header>
+             
               <div className="grid">
                   {nodes.map((row,rowIdx)=>{       
                       return(
