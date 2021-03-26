@@ -13,13 +13,13 @@
     width:12px;
   }
 }
-/*@media screen and (max-height: 720px){
+@media screen and (min-height: 720px){
   .node{
       height: 15px;
   width:15px;
   }
 }
-@media screen and (min-height: 1024px){
+/*@media screen and (min-height: 1024px){
     .node{
         height: 5px;
     width:15px;
