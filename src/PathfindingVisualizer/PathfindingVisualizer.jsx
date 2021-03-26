@@ -3,6 +3,7 @@ import Node from './Node/Node';
 import { MDBContainer, MDBRow, MDBCol , MDBBtn } from "mdbreact";
 import './PathfindingVisualizer.css';
 import {dijkstra, getNodesInShortestPathOrder} from '../algorithms/dijkstra';
+import Counter from './Counter'
 export default class PathfindingVisualizer extends Component {
     constructor() {
       super();
@@ -20,6 +21,7 @@ export default class PathfindingVisualizer extends Component {
       totalVisitedNodes:"",
       pathLength:"",
       };
+      this.counter=null;
     }
     componentDidMount() {
       const nodes = this.getInitialGrid();
@@ -115,7 +117,9 @@ console.log(this.state.finishNode)
         else
         this.setState({mouseIsPressed: false});
       }
-
+        updateInfo=(count)=>{
+          this.setState({totalVisitedNodes:new Date().toLocaleTimeString()});   
+    }
 
       handleClick=(event)=>{
         var selectedAlgo=this.state.algo
@@ -131,6 +135,7 @@ console.log(this.state.finishNode)
         }
         if(selectedAlgo==="Dijkstra Algo"){
          this.visualizeDijkstra();
+         
         }
     }
     clearPath=()=>{
@@ -151,6 +156,8 @@ console.log(this.state.finishNode)
           }
         }
       }
+      this.counter.setTotalVisitedNodes("");
+       this.counter.setPathLength("");
     }
     handleClear=()=>{
      for (let row = 0; row < 20; row++) {
@@ -173,14 +180,15 @@ console.log(this.state.finishNode)
      // document.getElementById("algoDropDown").value="Select Algo";
       document.getElementById("speedDropDown").value="Speed";
       const nodes = this.getInitialGrid();
-     
+       this.counter.setTotalVisitedNodes("");
+       this.counter.setPathLength("");
       this.setState({
         nodes: nodes,
         speed:10,
-        totalVisitedNodes:"",
-        pathLength:"",
       })
     }
+    
+
     onAlgoChange=(event)=>{
       this.setState({
         algo: event.target.value
@@ -239,13 +247,18 @@ console.log(this.state.finishNode)
           else if(node.row === this.state.finishNode.row && node.col === this.state.finishNode.col){
             document.getElementById(`node-${node.row}-${node.col}`).className ="node node-finish" ;
           }
-         
+         // this.setState({totalVisitedNodes:i});
+         this.counter.setTotalVisitedNodes(i);
         // console.log(`node-${node.row}-${node.col}`)
           }, s * i);
         }
         
       }
  
+      registerCounter=(c)=>
+      {
+        this.counter=c;
+      }
       
       animateShortestPath(nodesInShortestPathOrder) {
         for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
@@ -259,6 +272,7 @@ console.log(this.state.finishNode)
             else if(node.row === this.state.finishNode.row && node.col === this.state.finishNode.col){
               document.getElementById(`node-${node.row}-${node.col}`).className ="node node-finish-visited" ;
             }
+            this.counter.setPathLength(i);
            // console.log(`node-${node.row}-${node.col}`)
           }, 50 * i);
           
@@ -277,16 +291,16 @@ console.log(this.state.finishNode)
         const finishnode = nodes[finishNode.row][finishNode.col];
         const visitedNodesInOrder = dijkstra(nodes, startnode, finishnode);
         const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishnode);
-        var lengthVisitedNodes=visitedNodesInOrder.length;
-        var pathLen=nodesInShortestPathOrder.length;
-        this.setState({
+        /*this.setState({
           totalVisitedNodes:lengthVisitedNodes,
           pathLength:pathLen,
-        });
+        });*/
         this.animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
+        
+
       }
       render(){
-          const {nodes,algo,speed,mouseIsPressed,}=this.state;
+          const {nodes,mouseIsPressed,}=this.state;
           console.log("render chala");
           return(
          <MDBContainer>
@@ -296,6 +310,7 @@ console.log(this.state.finishNode)
            <h2>Algo Selected: {this.state.algo}</h2>
            </div>
            </header>
+           <div id="section">
            <select className="dropdown" id="algoDropDown" onChange={this.onAlgoChange}>
            <option>Select Algo</option>
              <option className="dropdown-item" value="DFS">DFS</option>
@@ -309,10 +324,11 @@ console.log(this.state.finishNode)
              <option className="dropdown-item" value="20">0.5px</option>
              <option className="dropdown-item" value="40">0.25px</option>
            </select>
+           
               <MDBBtn onClick={this.handleClick} className="myButton" id="visualizeButton">Visualize</MDBBtn>
               <MDBBtn onClick={this.handleClear} className="myButton" id="clearButton">Clear</MDBBtn>
-              <span className="info">Total Visited Nodes: {this.state.totalVisitedNodes}</span>
-              <span className="info">Path Length: {this.state.pathLength}</span>
+             <Counter registerCounter={this.registerCounter}/>
+             </div>
              
               <div className="grid">
                   {nodes.map((row,rowIdx)=>{       

@@ -4,13 +4,20 @@
   }
    .info{
     font-size: 20px;
-    margin: 50px 5px 50px 20px;
+   margin: 50px 5px 50px 20px;
     color: black;
     text-align: right;
+    margin-top: 50px;
    }
    #infoNodes{
      display: flex;
      flex-direction: row;
+   }
+   #section{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  
    }
   .myButton{
     border-color: #48c9b0;
@@ -66,6 +73,7 @@
   border-radius: 5px;
       height: 40px;
      margin-right: 10px;
+     margin-top: 10px;
      background-color: #48c9b0;
      font-size: 20px;
   }
