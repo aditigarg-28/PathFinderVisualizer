@@ -7,7 +7,7 @@
   flex: 1;
 }
 
-  @media screen and (max-height: 480px) {
+ /* @media screen and (max-height: 480px) {
     .node{
     height: 12px;
     width:12px;
@@ -24,7 +24,7 @@
         height: 5px;
     width:15px;
     }
-}
+}*/
 .clearNode{
 color: white;
 }
