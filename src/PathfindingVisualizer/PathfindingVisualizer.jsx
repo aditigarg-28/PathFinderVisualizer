@@ -1,9 +1,16 @@
 import React, {Component} from 'react';
 import Node from './Node/Node';
-import { MDBContainer, MDBRow, MDBCol , MDBBtn } from "mdbreact";
+import { MDBContainer, MDBRow, MDBCol , MDBBtn,MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem  } from "mdbreact";
+import Select from 'react-select';
 import './PathfindingVisualizer.css';
-import {dijkstra, getNodesInShortestPathOrder} from '../algorithms/dijkstra';
+import {dijkstra} from '../algorithms/dijkstra';
+import {dfs} from '../algorithms/dfs';
+import {bfs} from '../algorithms/bfs';
+import {AStar} from '../algorithms/AStar'
+import {getNodesInShortestPathOrder} from '../algorithms/getNodesInShortestPathOrder'
 import Counter from './Counter'
+import Complexity from './Complexity'
+import {spiral} from '../algorithms/try'
 export default class PathfindingVisualizer extends Component {
     constructor() {
       super();
@@ -20,37 +27,43 @@ export default class PathfindingVisualizer extends Component {
       finishNodePressed: false,
       totalVisitedNodes:"",
       pathLength:"",
+      isVisualize:false,
       };
       this.counter=null;
     }
     componentDidMount() {
       const nodes = this.getInitialGrid();
       this.setState({nodes});
-
-       /*const nodes=[];
-        for(let row=0;row<24;row++){
-            const currentRow=[];
-            for(let col=0;col<70;col++){
-              const currentNode={
-                col,
-                row,
-                isStart: row === START_NODE_ROW && col === START_NODE_COL,
-                isFinish: row === FINISH_NODE_ROW && col === FINISH_NODE_COL,
-                distance: Infinity,
-                isVisited: false,
-                isWall: false,
-                previousNode: null,
-              };
-                currentRow.push(currentNode);
-            }
-            nodes.push(currentRow)
-        }
-        this.setState({nodes});
-        */
       }
-     
+      
+      enableButtons=()=>{
+        document.getElementById("visualizeButton").style.pointerEvents="auto";
+        document.getElementById("visualizeButton").style.cursor="pointer";
+        document.getElementById("clearButton").style.pointerEvents="auto";
+        document.getElementById("clearButton").style.cursor="pointer";
+        document.getElementById("algoDropDown").style.pointerEvents="auto";
+        document.getElementById("algoDropDown").style.cursor="pointer";
+        document.getElementById("speedDropDown").style.pointerEvents="auto";
+        document.getElementById("speedDropDown").style.cursor="pointer";
+        document.getElementById("mazeDropDown").style.pointerEvents="auto";
+        document.getElementById("mazeDropDown").style.cursor="pointer";
+      }
+
+      disableButtons=()=>{
+        document.getElementById("visualizeButton").style.pointerEvents="none";
+        document.getElementById("visualizeButton").style.cursor="default";
+        document.getElementById("clearButton").style.pointerEvents="none";
+        document.getElementById("clearButton").style.cursor="default";
+        document.getElementById("algoDropDown").style.pointerEvents="none";
+        document.getElementById("algoDropDown").style.cursor="default";
+        document.getElementById("speedDropDown").style.pointerEvents="none";
+        document.getElementById("speedDropDown").style.cursor="default";
+        document.getElementById("mazeDropDown").style.pointerEvents="none";
+        document.getElementById("mazeDropDown").style.cursor="default";
+      }
 
       handleMouseDown(row, col) {
+        if(this.state.isVisualize) return;
         if (row === this.state.startNode.row && col === this.state.startNode.col){
       this.setState({ startNodePressed: true ,
         previousStartNode:{row:row,col:col},
@@ -104,44 +117,29 @@ console.log(this.state.finishNode)
       }
     
       handleMouseUp() {
+        var selectedAlgo=this.state.algo;
         if (this.state.startNodePressed){
         this.setState({ mouseIsPressed: false, startNodePressed: false });
         this.handleClear();
-        this.visualizeDijkstra();
+         this.visualize();
         }
       else if (this.state.finishNodePressed){
         this.setState({ mouseIsPressed: false, finishNodePressed: false });
         this.handleClear();
-        this.visualizeDijkstra();
+        this.visualize();
       }
         else
         this.setState({mouseIsPressed: false});
       }
-        updateInfo=(count)=>{
-          this.setState({totalVisitedNodes:new Date().toLocaleTimeString()});   
-    }
-
-      handleClick=(event)=>{
-        var selectedAlgo=this.state.algo
-        if(selectedAlgo===""){
-         alert("Select an Algo First")
-          return;
-        }
-        if(selectedAlgo==="BFS"){
-          this.visualizeBFS();
-        }
-        if(selectedAlgo==="DFS"){
-          this.visualizeDFS();
-        }
-        if(selectedAlgo==="Dijkstra Algo"){
-         this.visualizeDijkstra();
-         
-        }
-    }
+       
     clearPath=()=>{
       for (let row = 0; row < 20; row++) {
         for (let col = 0; col < 50; col++) {
           var node=this.state.nodes[row][col];
+          node.isVisited=false;
+          node.distance=Infinity;
+          node.previousNode=null;
+          node.isConsidered=false;
           if(row === this.state.startNode.row && col === this.state.startNode.col){
             document.getElementById(`node-${row}-${col}`).className ="node node-start";
           }
@@ -163,15 +161,19 @@ console.log(this.state.finishNode)
      for (let row = 0; row < 20; row++) {
         for (let col = 0; col < 50; col++) {
           var node=this.state.nodes[row][col];
+          node.isVisited=false;
+          node.distance=Infinity;
+          node.previousNode=null;
+          node.isConsidered=false;
           if(row === this.state.startNode.row && col === this.state.startNode.col){
             document.getElementById(`node-${row}-${col}`).className ="node node-start";
           }
           else if(row === this.state.finishNode.row && col === this.state.finishNode.col){
             document.getElementById(`node-${row}-${col}`).className ="node node-finish" ;
           }
-          else if(node.isWall){
-            document.getElementById(`node-${row}-${col}`).className ="node node-wall" ;
-          }
+         // else if(node.isWall){
+           // document.getElementById(`node-${row}-${col}`).className ="node node-wall" ;
+          //}
           else{
           document.getElementById(`node-${row}-${col}`).className ="node clearNode";
           }
@@ -187,12 +189,98 @@ console.log(this.state.finishNode)
         speed:10,
       })
     }
-    
+    RandomObstructionMaze=()=>{
+      this.handleClear();
+      this.disableButtons();
+      console.log("random called")
+      var i=0;
+      for (let row = 0; row < 20; row++) {
+        for (let col = 0; col < 20; col++) { 
+          i=i+1;
+          setTimeout(() => {
+          var colRandom=Math.floor(Math.random()*50)
+          console.log(colRandom)
+          var node=this.state.nodes[row][colRandom]
+          if(!node.isStart && !node.isFinish){
+          node.isWall=true;
+          document.getElementById(`node-${row}-${colRandom}`).className ="node node-wall";}
+          },22*i);
+       
 
+        }
+      }
+      setTimeout(()=>{
+        this.enableButtons()},10000);
+        //this.setState({isVisualize:false})
+      
+    }
+  
+   alternateMaze=()=>{
+    this.handleClear();
+    this.disableButtons();
+    console.log("alternate called")
+    var i=0
+    for (let row = 0; row < 20; row=row+2) {
+      for (let col = 0; col < 50; col=col+2) { 
+        i=i+1;
+        setTimeout(() => {
+          var node=this.state.nodes[row][col]
+          if(!node.isStart && !node.isFinish){
+          node.isWall=true;
+          document.getElementById(`node-${row}-${col}`).className ="node node-wall";}
+          },22*i);
+      }
+    }
+   
+    setTimeout(()=>{
+      this.enableButtons()},10000);
+   }
+
+   randomConnection=()=>{
+     this.alternateMaze();
+    this.RandomObstructionMaze();
+   }
+   spiralMaze=()=>{
+    this.handleClear();
+    const {nodes,startNode,finishNode} = this.state;
+    const spiralNodes=spiral(nodes,startNode,finishNode)
+    console.log(spiralNodes)
+    var j=0;
+    for(let i=0;i<spiralNodes.length;i++){
+      j=j+1;
+      setTimeout(() => {
+        const node=spiralNodes[i];
+        console.log(node)
+        if(!node.isStart && !node.isFinish){
+        node.isWall=true;
+        document.getElementById(`node-${node.row}-${node.col}`).className ="node node-wall";}
+        },22*j);
+    }
+  }
+   /* onMazeChange=(event)=>{
+      console.log(event.target.value)
+      //this.setState({
+      //  maze: event.target.value,
+      //})
+      var selectedMaze=event.target.value
+      console.log(selectedMaze)
+      if(selectedMaze=="Maze:") return;
+      if(selectedMaze==="Random Obstruction") this.RandomObstructionMaze();
+      else if(selectedMaze==="Random Connection") this.randomConnection();
+      else if(selectedMaze==="Alternate Maze") this.alternateMaze();
+      else   this.spiralMaze();
+      //if(selectedMaze==="Random Obstruction"){
+       // this.RandomObstructionMaze();
+       // this.alternateMaze();
+       //this.randomConnection();
+      //}
+    }*/
+   
     onAlgoChange=(event)=>{
       this.setState({
         algo: event.target.value
     })
+    console.log(this.state.algo)
       event.preventDefault()
   }
   onSpeedChange=(event)=>{
@@ -201,39 +289,52 @@ console.log(this.state.finishNode)
   })
     event.preventDefault()
 }
-      visualizeBFS=()=>{
-        alert("BFS Function called")
+      visualize=()=>{
+       
+        this.clearPath();
+        var selectedAlgo=this.state.algo
+        if(selectedAlgo==="Algorithm:"){
+         alert("Select an Algo First")
+          return;
+        }
+        this.setState({isVisualize:true})
+         // alert("BFS Function called")
+          const {nodes,startNode,finishNode} = this.state;
+           const startnode = nodes[startNode.row][startNode.col];
+           const finishnode = nodes[finishNode.row][finishNode.col];
+           const start_row=startNode.row;
+           const start_col=startNode.col;
+           if (start_row > 0 && start_row < nodes.length - 1 && start_col > 0 && start_col < nodes[0].length - 1) {
+             if(nodes[start_row-1][start_col].isWall && nodes[start_row+1][start_col].isWall && nodes[start_row][start_col+1].isWall && nodes[start_row][start_col-1].isWall){
+               alert("Destination can not reached..");
+               return;
+             }
+           }
+           this.disableButtons();
+           var visitedNodesInOrder;
+           if(selectedAlgo==="BFS"){
+           visitedNodesInOrder=bfs(nodes, startnode, finishnode);
+          }
+          else if(selectedAlgo==="DFS"){
+            visitedNodesInOrder=dfs(nodes, startnode, finishnode);
+          }
+          else if(selectedAlgo==="Dijkstra Algo"){
+            visitedNodesInOrder=dijkstra(nodes, startnode, finishnode);
+           }
+           else if(selectedAlgo==="A*"){
+            visitedNodesInOrder=AStar(nodes, startnode, finishnode);
+            }
+          const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishnode);
+           this.animate(visitedNodesInOrder, nodesInShortestPathOrder)
       }
-      visualizeDFS=()=>{
-        alert("DFS Function called")
-      }
-      enableButtons=()=>{
-        document.getElementById("visualizeButton").style.pointerEvents="auto";
-        document.getElementById("visualizeButton").style.cursor="pointer";
-        document.getElementById("clearButton").style.pointerEvents="auto";
-        document.getElementById("clearButton").style.cursor="pointer";
-        document.getElementById("algoDropDown").style.pointerEvents="auto";
-        document.getElementById("algoDropDown").style.cursor="pointer";
-        document.getElementById("speedDropDown").style.pointerEvents="auto";
-        document.getElementById("speedDropDown").style.cursor="pointer";
-      }
-
-      disableButtons=()=>{
-        document.getElementById("visualizeButton").style.pointerEvents="none";
-        document.getElementById("visualizeButton").style.cursor="default";
-        document.getElementById("clearButton").style.pointerEvents="none";
-        document.getElementById("clearButton").style.cursor="default";
-        document.getElementById("algoDropDown").style.pointerEvents="none";
-        document.getElementById("algoDropDown").style.cursor="default";
-        document.getElementById("speedDropDown").style.pointerEvents="none";
-        document.getElementById("speedDropDown").style.cursor="default";
-      }
-      animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder) {
+      
+      
+      animate(visitedNodesInOrder, nodesInShortestPathOrder) {
         var s=this.state.speed;
         for (let i = 0; i <= visitedNodesInOrder.length; i++) {
           if (i === visitedNodesInOrder.length) {
             setTimeout(() => {
-              this.animateShortestPath(nodesInShortestPathOrder);
+              this.animateShortestPath(nodesInShortestPathOrder,visitedNodesInOrder);
             }, s * i);
             return;
           }
@@ -247,6 +348,7 @@ console.log(this.state.finishNode)
           else if(node.row === this.state.finishNode.row && node.col === this.state.finishNode.col){
             document.getElementById(`node-${node.row}-${node.col}`).className ="node node-finish" ;
           }
+          
          // this.setState({totalVisitedNodes:i});
          this.counter.setTotalVisitedNodes(i);
         // console.log(`node-${node.row}-${node.col}`)
@@ -260,7 +362,8 @@ console.log(this.state.finishNode)
         this.counter=c;
       }
       
-      animateShortestPath(nodesInShortestPathOrder) {
+      animateShortestPath(nodesInShortestPathOrder,visitedNodesInOrder) {
+        
         for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
           setTimeout(() => {
             const node = nodesInShortestPathOrder[i];
@@ -274,36 +377,25 @@ console.log(this.state.finishNode)
             }
             this.counter.setPathLength(i);
            // console.log(`node-${node.row}-${node.col}`)
-          }, 50 * i);
+          }, 30 * i);
           
         }
+        this.setState({isVisualize:false})
         setTimeout(()=>{
-        this.enableButtons()},2000);
+        this.enableButtons()},4000);
+        //this.setState({isVisualize:false})
+        //const {nodes,startNode,finishNode} = this.state;
+        //const finishnode = nodes[finishNode.row][finishNode.col];
+        //const len=visitedNodesInOrder.length
+        //   if(visitedNodesInOrder[len-1]!==finishnode) alert("Destination can not be reached")
       }
 
-
-      visualizeDijkstra=()=>{
-        this.clearPath();
-       this.disableButtons();
-        alert("Dijkstra Function called");
-        const {nodes,startNode,finishNode} = this.state;
-        const startnode = nodes[startNode.row][startNode.col];
-        const finishnode = nodes[finishNode.row][finishNode.col];
-        const visitedNodesInOrder = dijkstra(nodes, startnode, finishnode);
-        const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishnode);
-        /*this.setState({
-          totalVisitedNodes:lengthVisitedNodes,
-          pathLength:pathLen,
-        });*/
-        this.animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
-        
-
-      }
       render(){
           const {nodes,mouseIsPressed,}=this.state;
           console.log("render chala");
           return(
-         <MDBContainer>
+           
+         <MDBContainer fluid>  
            <header id="header">
              <div id="heading">
            <h2 id="title">VisuAlgo</h2>
@@ -311,23 +403,46 @@ console.log(this.state.finishNode)
            </div>
            </header>
            <div id="section">
-           <select className="dropdown" id="algoDropDown" onChange={this.onAlgoChange}>
-           <option>Select Algo</option>
-             <option className="dropdown-item" value="DFS">DFS</option>
-             <option className="dropdown-item" value="BFS">BFS</option>
-             <option className="dropdown-item" value="Dijkstra Algo" selected>Dijkstra Algo</option>
-           </select>
-           <select className="dropdown" id="speedDropDown" onChange={this.onSpeedChange}>
-           <option>Speed</option>
-             <option className="dropdown-item" value="5">2px</option>
-             <option className="dropdown-item" value="10">1px</option>
-             <option className="dropdown-item" value="20">0.5px</option>
-             <option className="dropdown-item" value="40">0.25px</option>
-           </select>
-           
-              <MDBBtn onClick={this.handleClick} className="myButton" id="visualizeButton">Visualize</MDBBtn>
-              <MDBBtn onClick={this.handleClear} className="myButton" id="clearButton">Clear</MDBBtn>
+           <MDBDropdown >
+      <MDBDropdownToggle caret color="default" id="mazeDropDown" >
+      Maze:
+      </MDBDropdownToggle>
+      <MDBDropdownMenu basic>
+        <MDBDropdownItem onClick={this.RandomObstructionMaze} value="Random Obstruction">Random Obstruction</MDBDropdownItem>
+        <MDBDropdownItem onClick={this.randomConnection} value="Random Connection">Random Connection</MDBDropdownItem>
+        <MDBDropdownItem onClick={this.alternateMaze} value="Alternate Maze">Alternate Maze</MDBDropdownItem>
+        <MDBDropdownItem onClick={this.spiralMaze} value="Spiral Maze">Spiral Maze</MDBDropdownItem>
+      </MDBDropdownMenu>
+    </MDBDropdown>
+
+             <MDBDropdown >
+      <MDBDropdownToggle caret color="default" id="algoDropDown" >
+      Algorithm: {this.state.algo}
+      </MDBDropdownToggle>
+      <MDBDropdownMenu basic>
+        <MDBDropdownItem onClick={this.onAlgoChange} value="DFS">DFS</MDBDropdownItem>
+        <MDBDropdownItem onClick={this.onAlgoChange} value="BFS">BFS</MDBDropdownItem>
+        <MDBDropdownItem onClick={this.onAlgoChange} value="Dijkstra Algo">Dijkstra Algo</MDBDropdownItem>
+        <MDBDropdownItem onClick={this.onAlgoChange} value="A*">A*</MDBDropdownItem>
+      </MDBDropdownMenu>
+    </MDBDropdown>  
+           <MDBDropdown >
+      <MDBDropdownToggle caret color="default" id="speedDropDown" >
+      Speed:{this.state.speed}
+      </MDBDropdownToggle>
+      <MDBDropdownMenu basic>
+        <MDBDropdownItem  onClick={this.onSpeedChange} value="5">2px</MDBDropdownItem>
+        <MDBDropdownItem onClick={this.onSpeedChange} value="10">1px</MDBDropdownItem>
+        <MDBDropdownItem onClick={this.onSpeedChange} value="20">0.5px</MDBDropdownItem>
+        <MDBDropdownItem onClick={this.onSpeedChange} value="40">0.25px</MDBDropdownItem>
+      </MDBDropdownMenu>
+    </MDBDropdown>
+              <MDBBtn onClick={this.visualize} id="visualizeButton">Visualize</MDBBtn>
+              <MDBBtn onClick={this.handleClear} id="clearButton">Clear</MDBBtn>
+              <div  id="infoSection">
              <Counter registerCounter={this.registerCounter}/>
+             <Complexity algo={this.state.algo}/>
+             </div>
              </div>
              
               <div className="grid">
