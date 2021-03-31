@@ -1,6 +1,6 @@
 export function bfs(grid, startNode, finishNode) {
     console.log(startNode)
-    const visitedNodes = [];
+const visitedNodes = [];
     const queue=[];
     const closestNode=startNode;
     if (closestNode === finishNode) {

@@ -431,7 +431,7 @@ console.log(this.state.finishNode)
       Speed:{this.state.speed}
       </MDBDropdownToggle>
       <MDBDropdownMenu basic>
-        <MDBDropdownItem  onClick={this.onSpeedChange} value="5">2px</MDBDropdownItem>
+        <MDBDropdownItem onClick={this.onSpeedChange} value="5">2px</MDBDropdownItem>
         <MDBDropdownItem onClick={this.onSpeedChange} value="10">1px</MDBDropdownItem>
         <MDBDropdownItem onClick={this.onSpeedChange} value="20">0.5px</MDBDropdownItem>
         <MDBDropdownItem onClick={this.onSpeedChange} value="40">0.25px</MDBDropdownItem>
