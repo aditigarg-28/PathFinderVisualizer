@@ -20,21 +20,33 @@ function SpiralImplement(nodes,up,left,down,right,spiralNodes,finishnode){
      var p;
     for (p = left-1; p <=right; p++){
     node=nodes[up][p]
-    if(node!==finishnode) spiralNodes.push(node)
+    if(node!==finishnode) {
+        //node.isWall=true;
+        spiralNodes.push(node)
+    }
 }
 for (p =up+1 ; p <=down ; p++){
      node=nodes[p][right]
-if(node!==finishnode) spiralNodes.push(node)
+if(node!==finishnode) {
+    //node.isWall=true;
+spiralNodes.push(node)
+}
 }
 if ((down - 2) !== up)
 for (p = right - 1; p >= left; p--){
     node=nodes[down][p]
-    if(node!==finishnode) spiralNodes.push(node)
+    if(node!==finishnode){
+        //node.isWall=true;
+     spiralNodes.push(node)
+    }
 }
 if ((right - 2) !== left)
 for (p = down - 1; p > up+1; p--){
     node=nodes[p][left]
-    if(node!==finishnode) spiralNodes.push(node)
+    if(node!==finishnode) {
+       // node.isWall=true;
+    spiralNodes.push(node)
+    }
 }
 //spiralNodes.push(nodes[p+1][left+1])
 SpiralImplement(nodes,up+2,left+2,down-2,right-2,spiralNodes,finishnode)

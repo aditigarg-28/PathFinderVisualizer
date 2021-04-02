@@ -242,20 +242,28 @@ console.log(this.state.finishNode)
    }
    spiralMaze=()=>{
     this.handleClear();
+    this.disableButtons();
     const {nodes,startNode,finishNode} = this.state;
     const spiralNodes=spiral(nodes,startNode,finishNode)
+    this.setState({
+      nodes:this.state.nodes
+    })
     console.log(spiralNodes)
     var j=0;
     for(let i=0;i<spiralNodes.length;i++){
       j=j+1;
       setTimeout(() => {
         const node=spiralNodes[i];
-        console.log(node)
+        
         if(!node.isStart && !node.isFinish){
         node.isWall=true;
+        console.log(node)
         document.getElementById(`node-${node.row}-${node.col}`).className ="node node-wall";}
         },22*j);
     }
+    setTimeout(()=>{
+      this.enableButtons()
+    },5000);
   }
    /* onMazeChange=(event)=>{
       console.log(event.target.value)
@@ -290,7 +298,6 @@ console.log(this.state.finishNode)
     event.preventDefault()
 }
       visualize=()=>{
-       
         this.clearPath();
         var selectedAlgo=this.state.algo
         if(selectedAlgo==="Algorithm:"){
@@ -323,6 +330,7 @@ console.log(this.state.finishNode)
            }
            else if(selectedAlgo==="A*"){
             visitedNodesInOrder=AStar(nodes, startnode, finishnode);
+            console.log(visitedNodesInOrder)
             }
           const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishnode);
            this.animate(visitedNodesInOrder, nodesInShortestPathOrder)
