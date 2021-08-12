@@ -19,8 +19,8 @@ export default class Counter extends Component {
         render(){
             return(
                 <div>
-                <span className="info">Total Visited Nodes: {this.state.totalVisitedNodes}</span>
-                <span className="info">Path Length: {this.state.pathLength}</span>
+                <span className="info"><b>Total Visited Nodes: {this.state.totalVisitedNodes}</b></span>
+                <span className="info"><b>Path Length: {this.state.pathLength}</b></span>
                 </div>
             );
 }
