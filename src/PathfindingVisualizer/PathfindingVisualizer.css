@@ -31,26 +31,26 @@
     margin-top: 5px;
   }
   #algoDropDown{
-    height:55px;
+    height:50px;
     font-size: 13px;
   }
   #speedDropDown{
-    height:55px;
+    height:50px;
     font-size: 13px;
   }
   .dropdown-items:click{
     color: blue;
   }
   #mazeDropDown{
-    height:55px;
+    height:50px;
     font-size: 13px;
   }
   #clearButton{
-   height:55px;
+   height:50px;
    font-size: 13px;
   }
   #visualizeButton{
-    height:55px;
+    height:50px;
     font-size: 13px;
   }
 #header h2{
