@@ -17,8 +17,8 @@ export default class Complexity extends Component {
            }
             return(
                 <div>
-                <span className="info">Time Complexity: {timeComplexity}</span>
-                <span className="info">Space Complexity: {spaceComplexity}</span>
+                <span className="info"><b>Time Complexity: {timeComplexity}</b></span>
+                <span className="info"><b>Space Complexity: {spaceComplexity}</b></span>
                 </div>
             );
 }
