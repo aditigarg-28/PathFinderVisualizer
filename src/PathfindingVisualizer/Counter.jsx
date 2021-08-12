@@ -15,7 +15,6 @@ export default class Counter extends Component {
     setPathLength(pathlen){
         this.setState({pathLength:pathlen });   
     }
-    
         render(){
             return(
                 <div>
