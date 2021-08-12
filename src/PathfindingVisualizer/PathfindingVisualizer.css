@@ -3,8 +3,8 @@
     outline: 3px solid  #2bbbad;
   }
    .info{
-    font-size: 20px;
-   margin: 50px 5px 50px 20px;
+    font-size: 15px;
+   margin: 40px 3px 40px 15px;
     color: black;
     text-align: right;
     margin-top: 50px;
@@ -32,26 +32,26 @@
   }
   #algoDropDown{
     height:55px;
-    font-size: 15px;
+    font-size: 13px;
   }
   #speedDropDown{
     height:55px;
-    font-size: 15px;
+    font-size: 13px;
   }
   .dropdown-items:click{
     color: blue;
   }
   #mazeDropDown{
     height:55px;
-    font-size: 15px;
+    font-size: 13px;
   }
   #clearButton{
    height:55px;
-   font-size: 15px;
+   font-size: 13px;
   }
   #visualizeButton{
     height:55px;
-    font-size: 15px;
+    font-size: 13px;
   }
 #header h2{
     color: #fff;
