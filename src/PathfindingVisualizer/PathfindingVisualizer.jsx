@@ -68,13 +68,11 @@ export default class PathfindingVisualizer extends Component {
       this.setState({ startNodePressed: true ,
         previousStartNode:{row:row,col:col},
       });
-      console.log("start node chala bhaiya")
       }
       else if (row === this.state.finishNode.row && col === this.state.finishNode.col){
         this.setState({ finishNodePressed: true ,
           previousFinishNode:{row:row,col:col},
         });
-      console.log("end node chala bhaiya")
         }
         else{
         const newNodes = getNewGridWithWallToggled(this.state.nodes, row, col);
@@ -85,7 +83,6 @@ export default class PathfindingVisualizer extends Component {
       
     handleMouseEnter(row, col) {
     if (this.state.startNodePressed && this.state.finishNode.row!==row && this.state.finishNode.col!==col){
-    console.log("start node enter");
     var previousStartNodeRow=this.state.previousStartNode.row;
     var previousStartNodeCol=this.state.previousStartNode.col;
     document.getElementById(`node-${previousStartNodeRow}-${previousStartNodeCol}`).className ="node node-removeImage";
@@ -98,7 +95,6 @@ export default class PathfindingVisualizer extends Component {
     console.log(this.state.startNode)
     }
    else if(this.state.finishNodePressed && this.state.startNode.row!==row && this.state.startNode.col!==col){
-  console.log("finish node enter");
   var previousFinishNodeRow=this.state.previousFinishNode.row;
     var previousFinishNodeCol=this.state.previousFinishNode.col;
     document.getElementById(`node-${previousFinishNodeRow}-${previousFinishNodeCol}`).className ="node node-removeImage";
@@ -192,14 +188,13 @@ console.log(this.state.finishNode)
     RandomObstructionMaze=()=>{
       this.handleClear();
       this.disableButtons();
-      console.log("random called")
+      console.log("RandomObstructionMazecalled")
       var i=0;
       for (let row = 0; row < 20; row++) {
         for (let col = 0; col < 20; col++) { 
           i=i+1;
           setTimeout(() => {
           var colRandom=Math.floor(Math.random()*50)
-          console.log(colRandom)
           var node=this.state.nodes[row][colRandom]
           if(!node.isStart && !node.isFinish){
           node.isWall=true;
@@ -218,7 +213,7 @@ console.log(this.state.finishNode)
    alternateMaze=()=>{
     this.handleClear();
     this.disableButtons();
-    console.log("alternate called")
+    console.log("AlternateMaze called")
     var i=0
     for (let row = 0; row < 20; row=row+2) {
       for (let col = 0; col < 50; col=col+2) { 
@@ -248,7 +243,6 @@ console.log(this.state.finishNode)
     this.setState({
       nodes:this.state.nodes
     })
-    console.log(spiralNodes)
     var j=0;
     for(let i=0;i<spiralNodes.length;i++){
       j=j+1;
@@ -257,7 +251,6 @@ console.log(this.state.finishNode)
         
         if(!node.isStart && !node.isFinish){
         node.isWall=true;
-        console.log(node)
         document.getElementById(`node-${node.row}-${node.col}`).className ="node node-wall";}
         },22*j);
     }
@@ -266,7 +259,6 @@ console.log(this.state.finishNode)
     },5000);
   }
    /* onMazeChange=(event)=>{
-      console.log(event.target.value)
       //this.setState({
       //  maze: event.target.value,
       //})
@@ -330,7 +322,6 @@ console.log(this.state.finishNode)
            }
            else if(selectedAlgo==="A*"){
             visitedNodesInOrder=AStar(nodes, startnode, finishnode);
-            console.log(visitedNodesInOrder)
             }
           const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishnode);
            this.animate(visitedNodesInOrder, nodesInShortestPathOrder)
@@ -400,7 +391,6 @@ console.log(this.state.finishNode)
 
       render(){
           const {nodes,mouseIsPressed,}=this.state;
-          console.log("render chala");
           return(
            
          <MDBContainer fluid>  
@@ -490,7 +480,6 @@ console.log(this.state.finishNode)
           );
       }
  getInitialGrid = () => {
-        console.log("getInitialGrid chli");
         const nodes = [];
         for (let row = 0; row < 20; row++) {
           const currentRow = [];
