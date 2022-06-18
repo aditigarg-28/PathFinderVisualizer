@@ -5,12 +5,6 @@
   display: inline-block;
   flex: 1;
 }
-@media screen and (max-height: 480px) {
-  .node{
-  height: 12px;
-  width:12px;
-}
-}
 @media screen and (min-height: 720px){
 .node{
     height: 15px;
