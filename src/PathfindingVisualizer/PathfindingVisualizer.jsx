@@ -431,7 +431,6 @@ console.log(this.state.finishNode)
         <MDBDropdownItem onClick={this.onAlgoChange} value="DFS">DFS</MDBDropdownItem>
         <MDBDropdownItem onClick={this.onAlgoChange} value="BFS">BFS</MDBDropdownItem>
         <MDBDropdownItem onClick={this.onAlgoChange} value="Dijkstra Algo">Dijkstra Algo</MDBDropdownItem>
-        <MDBDropdownItem onClick={this.onAlgoChange} value="A*">A*</MDBDropdownItem>
       </MDBDropdownMenu>
     </MDBDropdown>  
            <MDBDropdown >
